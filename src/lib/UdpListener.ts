@@ -1,5 +1,5 @@
 import { createSocket, Socket } from "dgram";
-import Game from "./Game.1";
+import Game from "./Game";
 import Config from "./Config";
 
 const config = new Config().config;

@@ -86,7 +86,7 @@ export default class Game {
     };
     const config = new Config().config;
     this.connector = new OBSConnector(
-      `ws://${config.obsHost || "localhost"}:${config.obsPort || 4455}`
+      `ws://${config.obs.host || "localhost"}:${config.obs.port || 4455}`
     );
     this.lastPlay = {
       team: "home",
@@ -96,6 +96,9 @@ export default class Game {
     this.statsnscore = new StatsnScore();
   }
 
+  /**
+   * Syncs the current game object to statsnscore
+   */
   private async syncToStatsnScore() {
     const gameSeconds = this.game.time.gameMiliSeconds / 100;
     await this.statsnscore.quarter(this.game.quarterOrdinal as phase);
@@ -120,7 +123,7 @@ export default class Game {
     );
   }
 
-  public async write() {
+  private async renderObs() {
     try {
       await this.connector.setText(
         OBSSourceNames.POINTS_HOME,
@@ -180,41 +183,26 @@ export default class Game {
           await this.connector.showSource(OBSSourceNames.POSSESSION_AWAY);
           break;
       }
+    } catch (e) {
+      log.error(`OBS write failed: ${e}`);
+    }
+  }
+
+  /**
+   * Writes the game object to OBS
+   */
+  public async write() {
+    try {
       await this.syncToStatsnScore();
-      return;
+      await this.renderObs();
     } catch (e) {
       log.error(`Unexpected Error while trying to write game state: ${e}`);
     }
   }
 
-  public async score(
-    team: keyof GameObject["points"],
-    playType: keyof typeof playTypeScores
-  ) {
-    this.game.points[team] += playTypeScores[playType];
-    this.lastPlay = {
-      team: team,
-      playType: playType,
-    };
-    try {
-      await this.write();
-      return;
-    } catch (e) {
-      log.error(`Unexpected error trying to write new score: ${e}`);
-    }
-  }
-
-  public async undoScore() {
-    this.game.points[this.lastPlay.team] -=
-      playTypeScores[this.lastPlay.playType];
-    try {
-      await this.write();
-      return;
-    } catch (e) {
-      log.error(`Unexpected error trying to undo score: ${e}`);
-    }
-  }
-
+  /**
+   * Renders the quarter number to a ordinal number
+   */
   public renderQuarter() {
     switch (this.game.quarter) {
       case 1:
@@ -232,23 +220,10 @@ export default class Game {
     }
   }
 
-  public async quarterChange() {
-    if (this.game.quarter < 4) {
-      this.game.quarter++;
-    } else {
-      this.game.quarter = 1;
-    }
-
-    this.renderQuarter();
-
-    try {
-      await this.write();
-      return;
-    } catch (e) {
-      log.error(`Unexpected error trying to write new quarter change: ${e}`);
-    }
-  }
-
+  /**
+   * Set a down
+   * @param down Down number
+   */
   public async setDown(down: number) {
     this.game.down = down;
     switch (down) {
@@ -267,45 +242,8 @@ export default class Game {
     }
     try {
       await this.write();
-      return;
     } catch (e) {
       log.error(`Unexpected error trying to write down: ${e}`);
-    }
-  }
-
-  public async setDistance(distance: string) {
-    this.game.distance = distance;
-    try {
-      await this.write();
-      return;
-    } catch (e) {
-      log.error(`Unexpected error trying to write new distance: ${e}`);
-    }
-  }
-
-  public async startPlayClock() {
-    this.playClock = setInterval(async () => {
-      this.game.time.play--;
-      try {
-        await this.write();
-        return;
-      } catch (e) {
-        log.error(`Unexpected error trying to write new playclock state: ${e}`);
-      }
-    }, 100);
-  }
-
-  public async pausePlayClock() {
-    clearInterval(this.playClock);
-  }
-
-  public async resetPlayClock() {
-    this.game.time.play = 40;
-    try {
-      await this.write();
-      return;
-    } catch (e) {
-      log.error(`Unexpected error trying to reset play clock: ${e}`);
     }
   }
 
@@ -318,60 +256,9 @@ export default class Game {
       .slice(0, -1);
   }
 
-  public async removeTimeout(team: "home" | "away") {
-    if (this.game.timeouts[team] > 0) this.game.timeouts[team]--;
-    this.lastTimeout = team;
-    this.renderTimeouts();
-    try {
-      await this.write();
-      return;
-    } catch (e) {
-      log.error(`Unexpected error trying to remove a timeout: ${e}`);
-    }
-  }
-
-  public async undoTimeout() {
-    if (this.game.timeouts[this.lastTimeout] < 3)
-      this.game.timeouts[this.lastTimeout]++;
-    this.renderTimeouts();
-    try {
-      await this.write();
-      return;
-    } catch (e) {
-      log.error(`Unexpected error trying to undo a timeout: ${e}`);
-    }
-  }
-
   public renderGameClock() {
     this.game.time.gameRendered = new Date(this.game.time.gameMiliSeconds ?? 0)
       .toISOString()
       .slice(14, 19);
-  }
-
-  public async startGameClock() {
-    this.gameClock = setInterval(async () => {
-      if (this.game.time.gameMiliSeconds)
-        this.game.time.gameMiliSeconds -= 1000;
-      this.renderGameClock();
-      try {
-        await this.write();
-      } catch (e) {
-        log.error(`Unexpected error trying to start the game clock: ${e}`);
-      }
-    }, 1000);
-  }
-
-  public pauseGameClock() {
-    clearInterval(this.gameClock);
-  }
-
-  public async resetGameClock() {
-    this.game.time.gameMiliSeconds = 12 * 60 * 1000;
-    this.renderGameClock();
-    try {
-      await this.write();
-    } catch (e) {
-      log.error(`Unexpected error trying to reset the game clock: ${e}`);
-    }
   }
 }

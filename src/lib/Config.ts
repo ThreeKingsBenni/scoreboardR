@@ -5,8 +5,11 @@ import Logger from "./Logger";
 type ServerConfiguration = {
   mode: "UDP" | "WS";
   listenPort: number;
-  obsHost: string;
-  obsPort: number;
+  obs: {
+    host: string;
+    port: number;
+    enable: boolean;
+  };
   debug?: boolean;
   colors?: {
     RED: number;
@@ -40,8 +43,11 @@ export default class Config {
       this.config = {
         mode: "UDP",
         listenPort: 8999,
-        obsHost: "127.0.0.1",
-        obsPort: 4455,
+        obs: {
+          host: "127.0.0.1",
+          port: 4455,
+          enable: true,
+        },
         pluginName: "schauf",
         statsnscore: {
           scoreboardApiUrl: "https://statsnscore.online/scoreboard/control",

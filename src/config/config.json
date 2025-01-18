@@ -1,8 +1,11 @@
 {
   "mode": "UDP",
   "listenPort": 8999,
-  "obsHost": "127.0.0.1",
-  "obsPort": 4455,
+  "obs": {
+    "host": "127.0.0.1",
+    "port": 4455,
+    "enable": false
+  },
   "statsandscore": {
     "livestreamApiUrl": "https://statsnscore.online/livestream/control",
     "scoreboardApiUrl": "https://statsnscore.online/livestream/control",
