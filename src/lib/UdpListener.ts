@@ -27,6 +27,9 @@ export default abstract class UDPListener {
    */
   public onMessage(packet: Buffer): void {}
 
+  /**
+   * Start to listen for UDP packets on port
+   */
   public listen() {
     const configPort = config.listenPort;
     const port = configPort ?? 8998;

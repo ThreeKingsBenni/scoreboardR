@@ -1,22 +1,39 @@
 export default class Logger {
-    namespace: string;
-    constructor(namespace: string) {
-        this.namespace = namespace;
-    }
+  namespace: string;
+  constructor(namespace: string) {
+    this.namespace = namespace;
+  }
 
-    error(msg: any) {
-        console.error(`[${this.namespace} Error] ${msg}`);
-    }
+  /**
+   * Log an error message
+   * @param msg Message
+   */
+  error(msg: any) {
+    console.error(`[${this.namespace} Error] ${msg}`);
+  }
 
-    warn(msg: any) {
-        console.warn(`[${this.namespace} Warning] ${msg}`);
-    }
+  /**
+   * Log a warning message
+   * @param msg Message
+   */
+  warn(msg: any) {
+    console.warn(`[${this.namespace} Warning] ${msg}`);
+  }
 
-    info(msg: any) {
-        console.info(`[${this.namespace} Info] ${msg}`);
-    }
+  /**
+   * Log an info message
+   * @param msg Message
+   */
+  info(msg: any) {
+    console.info(`[${this.namespace} Info] ${msg}`);
+  }
 
-    debug(msg: any) {
-        if (process.env.NODE_ENV != "production") console.debug(`[${this.namespace} Debug] ${msg}`)
-    }
+  /**
+   * Log a debug message. Needs `NODE_ENV=development` set
+   * @param msg Message
+   */
+  debug(msg: any) {
+    if (process.env.NODE_ENV != "production")
+      console.debug(`[${this.namespace} Debug] ${msg}`);
+  }
 }

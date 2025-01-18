@@ -50,6 +50,9 @@ export const playTypeScores = {
   none: 0,
 };
 
+/**
+ * The Game object holds all information for a game
+ */
 export default class Game {
   game: GameObject;
   connector: OBSConnector;
@@ -123,6 +126,9 @@ export default class Game {
     );
   }
 
+  /**
+   * Renders the current game state to OBS
+   */
   private async renderObs() {
     try {
       await this.connector.setText(
@@ -247,6 +253,9 @@ export default class Game {
     }
   }
 
+  /**
+   * Renders the timeouts for OBS
+   */
   public renderTimeouts() {
     this.game.timeouts.awayRendered = "_ "
       .repeat(this.game.timeouts.away)
@@ -256,6 +265,9 @@ export default class Game {
       .slice(0, -1);
   }
 
+  /**
+   * Renders the game clock for display
+   */
   public renderGameClock() {
     this.game.time.gameRendered = new Date(this.game.time.gameMiliSeconds ?? 0)
       .toISOString()
