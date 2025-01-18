@@ -1,0 +1,19 @@
+{
+  "home": {
+    "points": "0",
+    "timeouts": "0"
+  },
+  "away": {
+    "points": "0",
+    "timeouts": "0"
+  },
+  "quarter": "1",
+  "down": "1",
+  "distance": "10",
+  "ball_on": "0",
+  "possession": "-1",
+  "clock": {
+    "game": "12:00",
+    "play": "0.0"
+  }
+}
