@@ -3,29 +3,35 @@ import { actions } from "../types/statsnscore/actions";
 import { config } from "../server";
 import { phase } from "../types/statsnscore/phase";
 import { Teams } from "../enum/statsandscore/teams";
+import Logger from "./Logger";
+
+const log = new Logger("StatsnScore");
 
 export default class StatsnScore {
-  token: String;
+  token: string;
   axios: Axios;
 
   constructor() {
     this.token = this.getToken();
     this.axios = new Axios({ baseURL: config.statsnscore.scoreboardApiUrl });
-    this.axios.defaults.headers.common["Token"] = config.statsnscore.gameToken;
   }
 
   private getToken() {
-    const token = config.statsnscore.gameToken;
+    const token = config.statsnscore.token;
     if (token) return token;
     throw new Error("Token not found");
   }
 
-  private getEndpoint(action: actions) {
-    return `/${action}`;
+  private getEndpoint(action: actions, data: any) {
+    return `/${action}/${data}`;
   }
 
   private async send(action: actions, data: Record<string, any> | string) {
-    await this.axios.post(this.getEndpoint(action), data);
+    log.info(this.getEndpoint(action, data));
+    const result = await this.axios.post(this.getEndpoint(action, data), "", {
+      headers: { Token: config.statsnscore.token },
+    });
+    log.info(`Response from statsnscore: ${result.data}`);
   }
 
   /**

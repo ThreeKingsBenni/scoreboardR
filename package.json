@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "mock": "ts-node ./src/tests/mockSchaufSignal.ts",
     "debug": "ts-node ./src/server.ts",
     "build": "tsc"
   },

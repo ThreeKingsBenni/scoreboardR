@@ -17,7 +17,7 @@ type ServerConfiguration = {
   };
   pluginName?: string;
   statsnscore: {
-    gameToken?: string;
+    token?: string;
     scoreboardApiUrl: string;
     livestreamApiUrl: string;
   };

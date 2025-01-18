@@ -2,6 +2,7 @@ import { OBSColors } from "../enum/obsColors.enum";
 import { OBSSourceNames } from "../enum/obsSourceNames.enum";
 import { Possesions } from "../enum/possessions";
 import { Teams } from "../enum/statsandscore/teams";
+import { config } from "../server";
 import { phase } from "../types/statsnscore/phase";
 import Config from "./Config";
 import Logger from "./Logger";
@@ -103,7 +104,13 @@ export default class Game {
    * Syncs the current game object to statsnscore
    */
   private async syncToStatsnScore() {
-    const gameSeconds = this.game.time.gameMiliSeconds / 100;
+    const baseDate = new Date(0, 0, 0, 0, 0, 0, 0);
+    const [minutesRemaining, secondsRemaining] =
+      this.game.time.gameRendered.split(":");
+
+    const gameSeconds =
+      Number(minutesRemaining) * 60 + Number(secondsRemaining);
+    log.info(this.game.quarter);
     await this.statsnscore.quarter(this.game.quarterOrdinal as phase);
     await this.statsnscore.gameclock(gameSeconds);
     await this.statsnscore.playclock(this.game.time.play);
@@ -131,63 +138,65 @@ export default class Game {
    */
   private async renderObs() {
     try {
-      await this.connector.setText(
-        OBSSourceNames.POINTS_HOME,
-        String(this.game.points["home"])
-      );
-      await this.connector.setText(
-        OBSSourceNames.POINTS_AWAY,
-        String(this.game.points["away"])
-      );
-      await this.connector.setText(
-        OBSSourceNames.GAME_CLOCK,
-        this.game.time.gameRendered
-      );
-      if (this.game.time.play <= 5) {
-        await this.connector.setTextColor(
-          OBSSourceNames.PLAY_CLOCK,
-          OBSColors.RED
+      if (config.obs.enable) {
+        await this.connector.setText(
+          OBSSourceNames.POINTS_HOME,
+          String(this.game.points["home"])
         );
-      } else {
-        await this.connector.setTextColor(
-          OBSSourceNames.PLAY_CLOCK,
-          OBSColors.BRAND_BLUE
+        await this.connector.setText(
+          OBSSourceNames.POINTS_AWAY,
+          String(this.game.points["away"])
         );
-      }
-      await this.connector.getSourceProperties(OBSSourceNames.PLAY_CLOCK);
-      await this.connector.setText(
-        OBSSourceNames.PLAY_CLOCK,
-        String(this.game.time.play)
-      );
-      await this.connector.setText(
-        OBSSourceNames.QUARTER,
-        this.game.quarterOrdinal
-      );
-      await this.connector.setText(
-        OBSSourceNames.DOWN_DISTANCE,
-        `${this.game.downOrdinal} & ${this.game.distance}`
-      );
-      await this.connector.setText(
-        OBSSourceNames.TIMEOUTS_HOME,
-        this.game.timeouts.homeRendered ?? ""
-      );
-      await this.connector.setText(
-        OBSSourceNames.TIMEOUTS_AWAY,
-        this.game.timeouts.awayRendered ?? ""
-      );
-      switch (Number(this.game.possession)) {
-        case Possesions.NONE:
-          await this.connector.hideSource(OBSSourceNames.POSSESSION_HOME);
-          await this.connector.hideSource(OBSSourceNames.POSSESSION_AWAY);
-          break;
-        case Possesions.HOME:
-          await this.connector.hideSource(OBSSourceNames.POSSESSION_AWAY);
-          await this.connector.showSource(OBSSourceNames.POSSESSION_HOME);
-          break;
-        case Possesions.AWAY:
-          await this.connector.hideSource(OBSSourceNames.POSSESSION_HOME);
-          await this.connector.showSource(OBSSourceNames.POSSESSION_AWAY);
-          break;
+        await this.connector.setText(
+          OBSSourceNames.GAME_CLOCK,
+          this.game.time.gameRendered
+        );
+        if (this.game.time.play <= 5) {
+          await this.connector.setTextColor(
+            OBSSourceNames.PLAY_CLOCK,
+            OBSColors.RED
+          );
+        } else {
+          await this.connector.setTextColor(
+            OBSSourceNames.PLAY_CLOCK,
+            OBSColors.BRAND_BLUE
+          );
+        }
+        await this.connector.getSourceProperties(OBSSourceNames.PLAY_CLOCK);
+        await this.connector.setText(
+          OBSSourceNames.PLAY_CLOCK,
+          String(this.game.time.play)
+        );
+        await this.connector.setText(
+          OBSSourceNames.QUARTER,
+          this.game.quarterOrdinal
+        );
+        await this.connector.setText(
+          OBSSourceNames.DOWN_DISTANCE,
+          `${this.game.downOrdinal} & ${this.game.distance}`
+        );
+        await this.connector.setText(
+          OBSSourceNames.TIMEOUTS_HOME,
+          this.game.timeouts.homeRendered ?? ""
+        );
+        await this.connector.setText(
+          OBSSourceNames.TIMEOUTS_AWAY,
+          this.game.timeouts.awayRendered ?? ""
+        );
+        switch (Number(this.game.possession)) {
+          case Possesions.NONE:
+            await this.connector.hideSource(OBSSourceNames.POSSESSION_HOME);
+            await this.connector.hideSource(OBSSourceNames.POSSESSION_AWAY);
+            break;
+          case Possesions.HOME:
+            await this.connector.hideSource(OBSSourceNames.POSSESSION_AWAY);
+            await this.connector.showSource(OBSSourceNames.POSSESSION_HOME);
+            break;
+          case Possesions.AWAY:
+            await this.connector.hideSource(OBSSourceNames.POSSESSION_HOME);
+            await this.connector.showSource(OBSSourceNames.POSSESSION_AWAY);
+            break;
+        }
       }
     } catch (e) {
       log.error(`OBS write failed: ${e}`);
