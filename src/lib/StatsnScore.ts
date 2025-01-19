@@ -26,12 +26,12 @@ export default class StatsnScore {
     return `/${action}/${data}`;
   }
 
-  private async send(action: actions, data: Record<string, any> | string) {
-    log.info(this.getEndpoint(action, data));
+  public async send(action: actions, data: Record<string, any> | string) {
+    log.debug(this.getEndpoint(action, data));
     const result = await this.axios.post(this.getEndpoint(action, data), "", {
       headers: { Token: config.statsnscore.token },
     });
-    log.info(`Response from statsnscore: ${result.data}`);
+    log.debug(`Response from statsnscore: ${result.data}`);
   }
 
   /**
