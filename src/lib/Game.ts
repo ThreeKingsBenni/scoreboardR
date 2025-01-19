@@ -22,7 +22,7 @@ export default class Game {
   lastPlay: lastPlayBuffer;
   playClock: NodeJS.Timer | undefined;
   gameClock: NodeJS.Timer | undefined;
-  lastTimeout: "home" | "away";
+  lastTimeout: Teams;
   statsnscore: StatsnScore;
 
   constructor() {
@@ -58,7 +58,7 @@ export default class Game {
       team: Teams.HOME,
       playType: "none",
     };
-    this.lastTimeout = "home";
+    this.lastTimeout = Teams.HOME;
     this.statsnscore = new StatsnScore();
   }
 
