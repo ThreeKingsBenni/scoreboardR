@@ -29,7 +29,7 @@ export default class Logger {
   }
 
   /**
-   * Log a debug message. Needs `NODE_ENV=development` set
+   * Log a debug message.
    * @param msg Message
    */
   debug(msg: any) {
