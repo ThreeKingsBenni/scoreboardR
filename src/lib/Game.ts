@@ -66,7 +66,6 @@ export default class Game {
    * Syncs the current game object to statsnscore
    */
   private async syncToStatsnScore() {
-    const baseDate = new Date(0, 0, 0, 0, 0, 0, 0);
     const [minutesRemaining, secondsRemaining] =
       this.game.time.gameRendered.split(":");
 
