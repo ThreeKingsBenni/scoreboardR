@@ -1,55 +1,17 @@
 import { OBSColors } from "../enum/obsColors.enum";
 import { OBSSourceNames } from "../enum/obsSourceNames.enum";
 import { Possesions } from "../enum/possessions";
-import { Teams } from "../enum/statsandscore/teams";
+import { Teams } from "../enum/teams";
 import { config } from "../server";
 import { phase } from "../types/statsnscore/phase";
 import Config from "./Config";
+import { GameObject } from "../types/GameObject";
 import Logger from "./Logger";
 import OBSConnector from "./ObsConnector";
 import StatsnScore from "./StatsnScore";
-
-type GameObject = {
-  points: {
-    [x: string]: number;
-    home: number;
-    away: number;
-  };
-  time: {
-    gameRendered: string;
-    gameMiliSeconds: number;
-    play: number;
-  };
-  timeouts: {
-    home: number;
-    homeRendered: string;
-    away: number;
-    awayRendered: string;
-  };
-  quarter: number;
-  quarterOrdinal: string;
-  down: number;
-  downOrdinal: string;
-  distance: string;
-  ball_on: number;
-  possession: -1 | 0 | 1;
-};
-
-type lastPlayBuffer = {
-  team: keyof GameObject["points"];
-  playType: keyof typeof playTypeScores;
-};
+import { lastPlayBuffer } from "../types/lastPlayBuffer";
 
 const log = new Logger("Game");
-
-export const playTypeScores = {
-  touchdown: 6,
-  fieldgoal: 3,
-  safety: 2,
-  pat: 1,
-  twopoint: 2,
-  none: 0,
-};
 
 /**
  * The Game object holds all information for a game
@@ -93,7 +55,7 @@ export default class Game {
       `ws://${config.obs.host || "localhost"}:${config.obs.port || 4455}`
     );
     this.lastPlay = {
-      team: "home",
+      team: Teams.HOME,
       playType: "none",
     };
     this.lastTimeout = "home";

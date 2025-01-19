@@ -2,7 +2,7 @@ import { Axios } from "axios";
 import { actions } from "../types/statsnscore/actions";
 import { config } from "../server";
 import { phase } from "../types/statsnscore/phase";
-import { Teams } from "../enum/statsandscore/teams";
+import { Teams } from "../enum/teams";
 import Logger from "./Logger";
 
 const log = new Logger("StatsnScore");

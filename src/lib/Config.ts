@@ -1,32 +1,12 @@
 import { join } from "path";
 import { readFileSync } from "fs";
 import Logger from "./Logger";
-
-type ServerConfiguration = {
-  mode: "UDP" | "WS";
-  listenPort: number;
-  obs: {
-    host: string;
-    port: number;
-    enable: boolean;
-  };
-  debug?: boolean;
-  colors?: {
-    RED: number;
-    BRAND_BLUE: number;
-  };
-  pluginName?: string;
-  statsnscore: {
-    token?: string;
-    scoreboardApiUrl: string;
-    livestreamApiUrl: string;
-  };
-};
+import { serverConfiguration } from "../types/serverConfiguration";
 
 const log = new Logger("Config");
 
 export default class Config {
-  config: ServerConfiguration;
+  config: serverConfiguration;
 
   constructor(filepath?: string) {
     try {
