@@ -22,14 +22,15 @@ export default class StatsnScore {
     throw new Error("Token not found");
   }
 
-  private getEndpoint(action: actions, data: any) {
-    return `/${action}/${data}`;
+  private getEndpoint(action: actions) {
+    return `/${action}`;
   }
 
   public async send(action: actions, data: Record<string, any> | string) {
-    log.debug(this.getEndpoint(action, data));
-    const result = await this.axios.post(this.getEndpoint(action, data), "", {
-      headers: { Token: config.statsnscore.token },
+    log.debug(this.getEndpoint(action));
+    log.debug(JSON.stringify(data));
+    const result = await this.axios.post(this.getEndpoint(action), JSON.stringify(data), {
+      headers: { Token: config.statsnscore.token, "Content-Type": "application/json" },
     });
     log.debug(`Response from statsnscore: ${result.data}`);
   }
@@ -37,64 +38,72 @@ export default class StatsnScore {
   /**
    * Set the quarter as an ordinal number
    */
-  public async quarter(phase: phase) {
-    await this.send("setData_quarter", phase);
+  public quarter(phase: phase) {
+    return { setData_quarter: phase };
   }
 
   /**
    * Update the gameclock
    * @param gameclockSeconds Value of the game clock in seconds
    */
-  public async gameclock(gameclockSeconds: number) {
-    await this.send("setData_gameclock", String(gameclockSeconds));
+  public gameclock(gameclockSeconds: number) {
+    return { setData_gameclock: String(gameclockSeconds) };
   }
 
   /**
    * Update the playclock
    * @param playclockSeconds Value of the playclock in seconds
    */
-  public async playclock(playclockSeconds: number) {
-    await this.send("setData_playclock", String(playclockSeconds));
+  public playclock(playclockSeconds: number) {
+    return { setData_playclock: String(playclockSeconds) };
   }
 
   /**
    * Converts the down number to ordinal and updates
    * @param down Current down as number
    */
-  public async down(down: number) {
-    function nth(n: number) {
-      return ["st", "nd", "rd"][((((n + 90) % 100) - 10) % 10) - 1] || "th";
+  public down(down: number) {
+    log.debug(`Setting down to ${down}`);
+    let downOrd = "";
+    switch (down) {
+      case 1:
+        downOrd = "1st";
+        break;
+      case 2:
+        downOrd = "2nd";
+        break;
+      case 3:
+        downOrd = "3rd";
+        break;
+      case 4:
+        downOrd = "4th";
+        break;
     }
-
-    const downOrd = nth(down);
-
-    await this.send("setData_down", downOrd);
+    return { "setData_down": downOrd };
   }
 
   /**
    * Update the distance in yards
    * @param distance Sets the distance in yards
    */
-  public async distance(distance: number) {
-    await this.send("setData_distance", String(distance));
+  public distance(distance: number) {
+    return { "setData_distance": String(distance) };
   }
 
   /**
    * Update the points
    * @param points Object containing the points for home and away team
    */
-  public async points(points: { home: number; away: number }) {
-    await this.send("setData_homepoints", String(points.home));
-    await this.send("setData_guestpoints", String(points.away));
+  public points(points: { home: number; away: number }) {
+    return { setData_homepoints: String(points.home), setData_guestpoints: String(points.away) };
   }
 
   /**
    * Updates the timeouts
    * @param timeouts Object containing the remaining timeouts for home and away team
    */
-  public async timeoutsRemaining(timeouts: { home: number; away: number }) {
-    await this.send("setData_hometimeouts", String(timeouts.home));
-    await this.send("setData_guesttimeouts", String(timeouts.away));
+  public timeoutsRemaining(timeouts: { home: number; away: number }) {
+    return { setData_hometimeouts: String(timeouts.home), setData_guesttimeouts: String(timeouts.away) };
   }
 
   /**
@@ -102,16 +111,15 @@ export default class StatsnScore {
    * @param los Value of the yardage on LOS
    * @param side Value of the Team
    */
-  public async los(los: number, side: Teams) {
-    await this.send("setData_los", String(los));
-    await this.send("setData_losteam", side);
+  public los(los: number, side: Teams) {
+    return { setData_los: String(los), setData_losteam: side };
   }
 
   /**
    * Update the possession
    * @param team Value of the Team
    */
-  public async possession(team: Teams) {
-    await this.send("setData_ballteam", team);
+  public possession(team: Teams) {
+    return { setData_ballteam: team };
   }
 }

@@ -76,6 +76,7 @@ export default class MessageMocker {
       this.ball_on = randomInt(-50, 50);
       this.distance = randomInt(1, 10);
       this.quarter = randomInt(1, 4);
+      this.down = randomInt(1, 4);
     }, 3000);
   }
 
@@ -115,6 +116,3 @@ export default class MessageMocker {
     clearInterval(this.gameClock);
   }
 }
-
-const mocker = new MessageMocker();
-mocker.mockMessage();

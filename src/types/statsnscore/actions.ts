@@ -10,4 +10,5 @@ export type actions =
   | "setData_guesttimeouts"
   | "setData_los"
   | "setData_losteam"
-  | "setData_ballteam";
+  | "setData_ballteam"
+  | "multi";

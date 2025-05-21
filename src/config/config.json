@@ -1,6 +1,7 @@
 {
   "mode": "UDP",
   "listenPort": 8999,
+  "pluginName": "schauf",
   "obs": {
     "host": "127.0.0.1",
     "port": 4455,
@@ -9,6 +10,7 @@
   "statsnscore": {
     "livestreamApiUrl": "https://statsnscore.online/livestream/control",
     "scoreboardApiUrl": "https://statsnscore.online/scoreboard/control",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnYW1lIjoiNjc4ODI5ZWNjNGQ0ZDI5MzQ5NGM0NDIwIiwiaWF0IjoxNzM3MTkwNjQ0LCJleHAiOjE3MzcyNzcwNDR9.azxJUtL8IWooCjtECGeCm_rKAybNFj0UW-fBfy_sXSs"
-  }
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnYW1lIjoiNjgyZDlmODFiY2JhZGIzOGNiNzdhNzE1IiwiaWF0IjoxNzQ3ODM1MzE4LCJleHAiOjE3NDc5MjE3MTh9.o5kXxALNr_jJhH67y9taD1SxE-_OZrumGW0nEruTpUo"
+  },
+  "mocker": "enabled"
 }

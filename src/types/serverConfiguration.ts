@@ -17,4 +17,5 @@ export type serverConfiguration = {
     scoreboardApiUrl: string;
     livestreamApiUrl: string;
   };
+  mocker?: "enabled" | "disabled";
 };
