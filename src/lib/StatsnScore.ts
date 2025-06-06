@@ -29,10 +29,14 @@ export default class StatsnScore {
   public async send(action: actions, data: Record<string, any> | string) {
     log.debug(this.getEndpoint(action));
     log.debug(JSON.stringify(data));
-    const result = await this.axios.post(this.getEndpoint(action), JSON.stringify(data), {
-      headers: { Token: config.statsnscore.token, "Content-Type": "application/json" },
-    });
-    log.debug(`Response from statsnscore: ${result.data}`);
+    try{
+      const result = await this.axios.post(this.getEndpoint(action), JSON.stringify(data), {
+        headers: { Token: config.statsnscore.token, "Content-Type": "application/json" },
+      });
+      log.debug(`Response from statsnscore: ${result.data}`);
+    }catch(e: any){
+      log.error(`Error sending data to StatsnScore: ${e.message}`);
+    }
   }
 
   /**
